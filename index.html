@@ -1,4 +1,813 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"><title>Karate Radio</title>
-<meta http-equiv="refresh" content="0; url=https://www.twitch.tv/karateradio"></head>
-<body style="background:#0d0716;color:#fff"><a href="https://www.twitch.tv/karateradio" style="color:#ffcf4a">twitch.tv/karateradio</a></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="icon" href="/cover.png">
+<title>Karate Radio · songs from chat</title>
+<meta name="description" content="A band that writes brand-new songs from chat's ideas, live on Twitch. Type !song + any idea.">
+<meta property="og:title" content="Karate Radio">
+<meta property="og:description" content="A band that writes brand-new songs from chat's ideas, live on Twitch. Type !song + any idea.">
+<meta property="og:image" content="https://karateradio.github.io/cover.png">
+<meta property="og:url" content="https://karateradio.github.io/">
+<style>
+  :root { --ink: #fff7e6; --gold: #ffcf4a; --red: #e0283a; --panel: rgba(26, 16, 39, .94); --bg: #0d0716;
+          --name: #8fd8ff; --purple: #9147ff; }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { margin: 0; color: var(--ink); font: 24px/1.3 "VT323", monospace; }
+  a { color: var(--name); }
+  .bg { position: fixed; inset: 0; z-index: -1; background: var(--bg) url(https://karateradio.github.io/stage.png) center bottom / cover no-repeat;
+        image-rendering: pixelated; }
+  .bg::after { content: ""; position: absolute; inset: 0;
+               background: linear-gradient(rgba(13, 7, 22, .45), rgba(13, 7, 22, .86) 60%); }
+  main { max-width: 680px; margin: 0 auto; padding: 22px 16px 56px; }
+  .logo { font: 18px "Press Start 2P", monospace; color: var(--gold); text-shadow: 3px 3px 0 var(--red);
+          text-decoration: none; display: inline-block; }
+  .card { margin-top: 18px; padding: 20px; background: var(--panel); border: 5px solid var(--gold);
+          box-shadow: 8px 8px 0 #000; }
+  h1 { font: 22px/1.5 "Press Start 2P", monospace; margin: 0 0 10px; overflow-wrap: anywhere; }
+  .by { color: var(--name); font-size: 28px; overflow-wrap: anywhere; }
+  .idea { opacity: .85; margin: 6px 0 16px; }
+  audio { width: 100%; margin: 6px 0 12px; }
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 12px 16px; font: 13px "Press Start 2P", monospace; color: #fff;
+         background: var(--red); border: 4px solid #000; text-decoration: none; }
+  .btn.alt { background: var(--purple); }
+  .lyrics h3 { font: 12px "Press Start 2P", monospace; color: var(--gold); margin: 18px 0 6px; }
+  .lyrics h3:first-child { margin-top: 0; }
+  .lyrics p { margin: 0; }
+  .note { opacity: .7; font-size: 20px; margin-top: 10px; }
+  .cta { margin-top: 24px; text-align: center; }
+  .cta b, .gold { color: var(--gold); }
+
+  .hero { text-align: center; padding: 34px 16px 0;
+           background: radial-gradient(ellipse at 50% 0, #2a1a48, var(--bg) 70%); }
+  .hero h1 { font-size: clamp(26px, 6vw, 52px); color: var(--gold); text-shadow: 4px 4px 0 var(--red), 8px 8px 0 #000;
+              margin: 0 0 14px; }
+  .hero p { font-size: 30px; margin: 0 0 18px; }
+  .stage { display: block; width: min(1100px, 100%); margin: 26px auto 0; image-rendering: pixelated;
+            border: 6px solid var(--gold); box-shadow: 0 0 0 6px #000, 0 0 60px rgba(145, 71, 255, .35); }
+  .how { display: inline-block; margin: 0 0 16px; padding: 8px 14px; background: #0e0e10; border: 4px solid var(--purple);
+          font-size: 30px; }
+  .how b { font: 18px "Press Start 2P", monospace; color: var(--gold); font-weight: normal; }
+  .bg { display: none; }
+  .list-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+  .list-head h2 { font: 16px/1.5 "Press Start 2P", monospace; color: var(--gold); margin: 0; }
+  input { flex: 1 1 220px; max-width: 320px; padding: 8px 12px; font: 24px "VT323", monospace; color: var(--ink);
+           background: #0e0e10; border: 4px solid var(--purple); }
+  .song { margin-top: 16px; padding: 16px 18px 6px; background: var(--panel); border: 4px solid var(--gold);
+           box-shadow: 6px 6px 0 #000; }
+  .song .t { font: 15px/1.6 "Press Start 2P", monospace; color: #fff; text-decoration: none; overflow-wrap: anywhere; }
+  .song .t:hover { color: var(--gold); }
+  .song .by { font-size: 26px; margin-top: 4px; }
+  .song .day { color: var(--ink); opacity: .6; }
+  .song .idea { margin: 2px 0 6px; }
+  footer { text-align: center; opacity: .7; margin-top: 30px; }
+</style>
+</head>
+<body>
+<section class="hero">
+  <h1>KARATE RADIO</h1>
+  <p>a band that writes brand-new songs from chat's ideas. live, all day.</p>
+  <div class="how">type <b>!song</b> + any idea</div><br>
+  <a class="btn alt" href="https://www.twitch.tv/karateradio">WATCH LIVE ON TWITCH</a>
+  <a href="https://www.twitch.tv/karateradio"><img class="stage" src="https://karateradio.github.io/stage.png" alt="the Karate Radio band on stage" width="1536" height="864"></a>
+</section>
+<main>
+  <div class="list-head">
+    <h2>119 SONGS CHAT ASKED FOR</h2>
+    <input id="q" type="search" placeholder="search songs, names, ideas" aria-label="search songs">
+  </div>
+  <div id="songs">
+<article class="song" data-q="cheap chess moves ketterrm cheap chess moves">
+  <a class="t" href="s/lv0UO2Hp/">Cheap Chess Moves</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: cheap chess moves</div>
+  <audio controls preload="none" src="s/lv0UO2Hp/song.mp3"></audio>
+</article>
+<article class="song" data-q="nvidia house band ketterrm nvidia house band">
+  <a class="t" href="s/8RrArFdf/">Nvidia House Band</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: Nvidia house band</div>
+  <audio controls preload="none" src="s/8RrArFdf/song.mp3"></audio>
+</article>
+<article class="song" data-q="flat tire, karate kick ketterrm karate kick flat tire">
+  <a class="t" href="s/CU6dWpFt/">Flat Tire, Karate Kick</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: Karate Kick Flat Tire</div>
+  <audio controls preload="none" src="s/CU6dWpFt/song.mp3"></audio>
+</article>
+<article class="song" data-q="the time is now ketterrm song is called the time is ... and it should tell me the time it is right now">
+  <a class="t" href="s/heVC3xiy/">The Time Is Now</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: song is called The time is ... And it should tell me The time it is right now</div>
+  <audio controls preload="none" src="s/heVC3xiy/song.mp3"></audio>
+</article>
+<article class="song" data-q="today’s top news is a total mess ketterrm today’s top news story is">
+  <a class="t" href="s/s8SqGKQr/">Today’s Top News Is a Total Mess</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: today’s top news story is</div>
+  <audio controls preload="none" src="s/s8SqGKQr/song.mp3"></audio>
+</article>
+<article class="song" data-q="top videos ketterrm twitch top videos">
+  <a class="t" href="s/Zx2NrhX4/">Top Videos</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: twitch top videos</div>
+  <audio controls preload="none" src="s/Zx2NrhX4/song.mp3"></audio>
+</article>
+<article class="song" data-q="open an account ketterrm steps to open a brokerage account">
+  <a class="t" href="s/ixgsdnj6/">Open an Account</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: steps to open a brokerage account</div>
+  <audio controls preload="none" src="s/ixgsdnj6/song.mp3"></audio>
+</article>
+<article class="song" data-q="minecraft master ketterrm minecraft master">
+  <a class="t" href="s/vG3CYQOo/">Minecraft Master</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: minecraft master</div>
+  <audio controls preload="none" src="s/vG3CYQOo/song.mp3"></audio>
+</article>
+<article class="song" data-q="born to kick higher ketterrm born to kick higher">
+  <a class="t" href="s/8riTT5pY/">Born to Kick Higher</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: born to kick higher</div>
+  <audio controls preload="none" src="s/8riTT5pY/song.mp3"></audio>
+</article>
+<article class="song" data-q="claude vs chat gpt ketterrm claude vs chat gpt">
+  <a class="t" href="s/6bif3jwM/">Claude vs Chat GPT</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: Claude vs chat gpt</div>
+  <audio controls preload="none" src="s/6bif3jwM/song.mp3"></audio>
+</article>
+<article class="song" data-q="this is now citywide command ketterrm this is now citywide command.">
+  <a class="t" href="s/x5JoImpO/">This is Now Citywide Command</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: This is now Citywide Command.</div>
+  <audio controls preload="none" src="s/x5JoImpO/song.mp3"></audio>
+</article>
+<article class="song" data-q="mr. beast is here ketterrm mr beast is here @karateradio">
+  <a class="t" href="s/QpGzEM6A/">Mr. Beast is Here</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: mr beast is here @KarateRadio</div>
+  <audio controls preload="none" src="s/QpGzEM6A/song.mp3"></audio>
+</article>
+<article class="song" data-q="high kicks high kicks ketterrm high kicks high kicks and belly rolls">
+  <a class="t" href="s/kYya8zYe/">High Kicks High Kicks</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: high kicks high kicks And belly rolls</div>
+  <audio controls preload="none" src="s/kYya8zYe/song.mp3"></audio>
+</article>
+<article class="song" data-q="taco vs burrito sandwich1234564 tacos vs burritos the fial sshowdown">
+  <a class="t" href="s/PVCAk1kQ/">Taco vs Burrito</a>
+  <div class="by">@sandwich1234564 <span class="day">· Oct 22</span></div>
+  <div class="idea">about: tacos vs burritos the fial sshowdown</div>
+  <audio controls preload="none" src="s/PVCAk1kQ/song.mp3"></audio>
+</article>
+<article class="song" data-q="sumo drummer leads the dojo ketterrm sumo drummer is the leader of the dojo">
+  <a class="t" href="s/ol5bd0zY/">Sumo Drummer Leads the Dojo</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: sumo drummer is The leader of The dojo</div>
+  <audio controls preload="none" src="s/ol5bd0zY/song.mp3"></audio>
+</article>
+<article class="song" data-q="sushi pizza wasabi wow ketterrm sushi pizza with wasbi">
+  <a class="t" href="s/I6F2NlIf/">Sushi Pizza Wasabi Wow</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: sushi Pizza with wasbi</div>
+  <audio controls preload="none" src="s/I6F2NlIf/song.mp3"></audio>
+</article>
+<article class="song" data-q="scallops for dinner porkroll7 scallops for dinner">
+  <a class="t" href="s/AQJgvBSx/">Scallops for Dinner</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 22</span></div>
+  <div class="idea">about: scallops for dinner</div>
+  <audio controls preload="none" src="s/AQJgvBSx/song.mp3"></audio>
+</article>
+<article class="song" data-q="drop kick the beat ketterrm karate  drop kick like the beat">
+  <a class="t" href="s/OnRh6x8O/">Drop Kick the Beat</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: karate  drop kick like The beat</div>
+  <audio controls preload="none" src="s/OnRh6x8O/song.mp3"></audio>
+</article>
+<article class="song" data-q="dojo master mows the lawn ketterrm yard work for the dojo master">
+  <a class="t" href="s/wxyePCig/">Dojo Master Mows the Lawn</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: yard Work for The dojo master</div>
+  <audio controls preload="none" src="s/wxyePCig/song.mp3"></audio>
+</article>
+<article class="song" data-q="psycho karate chop ketterrm psycho karate chop">
+  <a class="t" href="s/u5rGXdY4/">Psycho Karate Chop</a>
+  <div class="by">@ketterrm <span class="day">· Oct 22</span></div>
+  <div class="idea">about: psycho karate chop</div>
+  <audio controls preload="none" src="s/u5rGXdY4/song.mp3"></audio>
+</article>
+<article class="song" data-q="we’re the bloody family uhhvini187xgg1 bloody family by lil jeff">
+  <a class="t" href="s/23QG78sh/">We’re the Bloody Family</a>
+  <div class="by">@uhhvini187xgg1 <span class="day">· Oct 21</span></div>
+  <div class="idea">about: bloody family by lil Jeff</div>
+  <audio controls preload="none" src="s/23QG78sh/song.mp3"></audio>
+</article>
+<article class="song" data-q="i know it all cooldude_89p13 mr know it all by teddy swims">
+  <a class="t" href="s/rdFYONiT/">I Know It All</a>
+  <div class="by">@cooldude_89p13 <span class="day">· Oct 21</span></div>
+  <div class="idea">about: mr know it all by teddy swims</div>
+  <audio controls preload="none" src="s/rdFYONiT/song.mp3"></audio>
+</article>
+<article class="song" data-q="short and sweet ketterrm songs are short on karate radio">
+  <a class="t" href="s/zKCtxzOe/">Short and Sweet</a>
+  <div class="by">@ketterrm <span class="day">· Oct 20</span></div>
+  <div class="idea">about: songs are short on karate radio</div>
+  <audio controls preload="none" src="s/zKCtxzOe/song.mp3"></audio>
+</article>
+<article class="song" data-q="uber or bust ketterrm uber or bust">
+  <a class="t" href="s/0CRfHo04/">Uber or Bust</a>
+  <div class="by">@ketterrm <span class="day">· Oct 20</span></div>
+  <div class="idea">about: uber Or bust</div>
+  <audio controls preload="none" src="s/0CRfHo04/song.mp3"></audio>
+</article>
+<article class="song" data-q="mobil ion is hype ketterrm mobil ion is hype">
+  <a class="t" href="s/Zezsx41Q/">Mobil Ion is Hype</a>
+  <div class="by">@ketterrm <span class="day">· Oct 20</span></div>
+  <div class="idea">about: mobil ion is hype</div>
+  <audio controls preload="none" src="s/Zezsx41Q/song.mp3"></audio>
+</article>
+<article class="song" data-q="space x world ketterrm flying in the space x world">
+  <a class="t" href="s/HHPZsLxq/">Space X World</a>
+  <div class="by">@ketterrm <span class="day">· Oct 20</span></div>
+  <div class="idea">about: flying in The space x world</div>
+  <audio controls preload="none" src="s/HHPZsLxq/song.mp3"></audio>
+</article>
+<article class="song" data-q="vip gets their bonus ketterrm bonus for being vip">
+  <a class="t" href="s/TGtx3Fo4/">VIP Gets Their Bonus</a>
+  <div class="by">@ketterrm <span class="day">· Oct 20</span></div>
+  <div class="idea">about: bonus for being vip</div>
+  <audio controls preload="none" src="s/TGtx3Fo4/song.mp3"></audio>
+</article>
+<article class="song" data-q="sad kicks in the dark ketterrm sad songs and karate kicks">
+  <a class="t" href="s/aBzQygIs/">Sad Kicks in the Dark</a>
+  <div class="by">@ketterrm <span class="day">· Oct 20</span></div>
+  <div class="idea">about: sad songs And karate kicks</div>
+  <audio controls preload="none" src="s/aBzQygIs/song.mp3"></audio>
+</article>
+<article class="song" data-q="rent&#x27;s due and the dojo&#x27;s gone karateradio i couldn&#x27;t pay my rent and the dojo closed">
+  <a class="t" href="s/p6AEeSTq/">Rent&#x27;s Due and the Dojo&#x27;s Gone</a>
+  <div class="by">@karateradio <span class="day">· Oct 20</span></div>
+  <div class="idea">about: I couldn&#x27;t pay my rent and the dojo Closed</div>
+  <audio controls preload="none" src="s/p6AEeSTq/song.mp3"></audio>
+</article>
+<article class="song" data-q="mamas corn bread karateradio mamas corn bread">
+  <a class="t" href="s/owcDxD30/">Mamas Corn Bread</a>
+  <div class="by">@karateradio <span class="day">· Oct 19</span></div>
+  <div class="idea">about: mamas corn bread</div>
+  <audio controls preload="none" src="s/owcDxD30/song.mp3"></audio>
+</article>
+<article class="song" data-q="karate in sweatpants ketterrm karate in sweatpants">
+  <a class="t" href="s/133u2VBD/">Karate in Sweatpants</a>
+  <div class="by">@ketterrm for @i_wear_sweatpants <span class="day">· Oct 18</span></div>
+  <div class="idea">about: karate in sweatpants</div>
+  <audio controls preload="none" src="s/133u2VBD/song.mp3"></audio>
+</article>
+<article class="song" data-q="reggae sushi ketterrm reggae sushi">
+  <a class="t" href="s/fstp7D83/">Reggae Sushi</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: reggae sushi</div>
+  <audio controls preload="none" src="s/fstp7D83/song.mp3"></audio>
+</article>
+<article class="song" data-q="stars and stripes reggae ketterrm reggae version of star spangled banner">
+  <a class="t" href="s/eGEKeZ0w/">Stars and Stripes Reggae</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: reggae version of star spangled banner</div>
+  <audio controls preload="none" src="s/eGEKeZ0w/song.mp3"></audio>
+</article>
+<article class="song" data-q="cat needs catnip to feel something karateradio cat needs catnip to feel something">
+  <a class="t" href="s/WzQS2x1y/">Cat Needs Catnip to Feel Something</a>
+  <div class="by">@karateradio <span class="day">· Oct 18</span></div>
+  <div class="idea">about: Cat needs catnip to feel something</div>
+  <audio controls preload="none" src="s/WzQS2x1y/song.mp3"></audio>
+</article>
+<article class="song" data-q="gas is low and i need some now ketterrm gas is low and i need some now">
+  <a class="t" href="s/6F0IXMRE/">Gas is Low and I Need Some Now</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: gas is low and I need some now</div>
+  <audio controls preload="none" src="s/6F0IXMRE/song.mp3"></audio>
+</article>
+<article class="song" data-q="karaoke and karate ketterrm karaoke and karate">
+  <a class="t" href="s/xGhdByrF/">Karaoke and Karate</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: karaoke and karate</div>
+  <audio controls preload="none" src="s/xGhdByrF/song.mp3"></audio>
+</article>
+<article class="song" data-q="misery times verity i_wear_sweatpants misery x verity">
+  <a class="t" href="s/xLp3Hzyk/">Misery Times Verity</a>
+  <div class="by">@i_wear_sweatpants <span class="day">· Oct 18</span></div>
+  <div class="idea">about: misery x verity</div>
+  <audio controls preload="none" src="s/xLp3Hzyk/song.mp3"></audio>
+</article>
+<article class="song" data-q="monday sushi at gugu ketterrm monday is sushi day at gugu - tuesday is sushi day at lily">
+  <a class="t" href="s/dCmHfVUK/">Monday Sushi at Gugu</a>
+  <div class="by">@ketterrm for @KarateRadio <span class="day">· Oct 18</span></div>
+  <div class="idea">about: Monday is sushi day at gugu - Tuesday is sushi day at lily</div>
+  <audio controls preload="none" src="s/dCmHfVUK/song.mp3"></audio>
+</article>
+<article class="song" data-q="monday gugu, tuesday lily ketterrm monday is sushi day at gugu - tuesday is sushi day at lily">
+  <a class="t" href="s/qPv0zqQ9/">Monday Gugu, Tuesday Lily</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: Monday is sushi day at gugu - Tuesday is sushi day at lily</div>
+  <audio controls preload="none" src="s/qPv0zqQ9/song.mp3"></audio>
+</article>
+<article class="song" data-q="chess and karate karateradio chess karate">
+  <a class="t" href="s/6uqd6Axa/">Chess and Karate</a>
+  <div class="by">@karateradio <span class="day">· Oct 18</span></div>
+  <div class="idea">about: chess karate</div>
+  <audio controls preload="none" src="s/6uqd6Axa/song.mp3"></audio>
+</article>
+<article class="song" data-q="early to bed, early to work ketterrm i gotta get to bed early so i can work at mobile ion early in the morning in the style of taylor swift">
+  <a class="t" href="s/DFxgS1h3/">Early to Bed, Early to Work</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: I gotta get to bed early so I can work at mobile ion early in the morning in the style of Taylor swift</div>
+  <audio controls preload="none" src="s/DFxgS1h3/song.mp3"></audio>
+</article>
+<article class="song" data-q="early bed, early grind ketterrm i gotta get to bed early so i can work at mobile ion early in the morning in the style of dave matthews band">
+  <a class="t" href="s/pZ0ugT3m/">Early Bed, Early Grind</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: I gotta get to bed early so I can work at mobile ion early in the morning in the style of Dave Matthews band</div>
+  <audio controls preload="none" src="s/pZ0ugT3m/song.mp3"></audio>
+</article>
+<article class="song" data-q="early bed, early work ketterrm i gotta get to bed early so i can work at mobilion early in the morning in the style of taylor swift">
+  <a class="t" href="s/km8ppZTg/">Early Bed, Early Work</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: I gotta get to bed early so I can work at mobilion early in the morning in the style of Taylor swift</div>
+  <audio controls preload="none" src="s/km8ppZTg/song.mp3"></audio>
+</article>
+<article class="song" data-q="costco snacks at work ketterrm snacks at work are better when they’re from costco">
+  <a class="t" href="s/BlFVRhdV/">Costco Snacks at Work</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 18</span></div>
+  <div class="idea">about: snacks at work are better when they’re from Costco</div>
+  <audio controls preload="none" src="s/BlFVRhdV/song.mp3"></audio>
+</article>
+<article class="song" data-q="early to bed ketterrm i gotta get to bed early so i can work at mobilion early in the morning">
+  <a class="t" href="s/pyg3SBIM/">Early to Bed</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: I gotta get to bed early so I can work at mobilion early in the morning</div>
+  <audio controls preload="none" src="s/pyg3SBIM/song.mp3"></audio>
+</article>
+<article class="song" data-q="grandma&#x27;s four-hour feat ketterrm dinner in charleston south carolina- drove 4 hrs today with grandma and dana">
+  <a class="t" href="s/z22RSpdV/">Grandma&#x27;s Four-Hour Feat</a>
+  <div class="by">@ketterrm <span class="day">· Oct 18</span></div>
+  <div class="idea">about: dinner in Charleston South Carolina- drove 4 hrs today with grandma and Dana</div>
+  <audio controls preload="none" src="s/z22RSpdV/song.mp3"></audio>
+</article>
+<article class="song" data-q="fate’s a jerk kurumi_tokisaki_tv whims of fate">
+  <a class="t" href="s/rxz4CjKD/">Fate’s a Jerk</a>
+  <div class="by">@kurumi_tokisaki_tv <span class="day">· Oct 18</span></div>
+  <div class="idea">about: whims of fate</div>
+  <audio controls preload="none" src="s/rxz4CjKD/song.mp3"></audio>
+</article>
+<article class="song" data-q="rivers in the desert kurumi_tokisaki_tv rivers in the desert">
+  <a class="t" href="s/4cqXmU2X/">Rivers in the Desert</a>
+  <div class="by">@kurumi_tokisaki_tv <span class="day">· Oct 18</span></div>
+  <div class="idea">about: rivers in the desert</div>
+  <audio controls preload="none" src="s/4cqXmU2X/song.mp3"></audio>
+</article>
+<article class="song" data-q="i miss my dad&#x27;s toast sandwich1234564 i miss m dad">
+  <a class="t" href="s/XEkV0zuE/">I Miss My Dad&#x27;s Toast</a>
+  <div class="by">@sandwich1234564 <span class="day">· Oct 18</span></div>
+  <div class="idea">about: i miss m dad</div>
+  <audio controls preload="none" src="s/XEkV0zuE/song.mp3"></audio>
+</article>
+<article class="song" data-q="mastering punches at 2am porkroll7 mastering punches at 2am. grind time">
+  <a class="t" href="s/1LVvMWeH/">Mastering Punches at 2am</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 18</span></div>
+  <div class="idea">about: mastering punches at 2am. Grind time</div>
+  <audio controls preload="none" src="s/1LVvMWeH/song.mp3"></audio>
+</article>
+<article class="song" data-q="ninja blues sandwich1234564 ninja blues">
+  <a class="t" href="s/itpUpy4Q/">Ninja Blues</a>
+  <div class="by">@sandwich1234564 <span class="day">· Oct 18</span></div>
+  <div class="idea">about: ninja blues</div>
+  <audio controls preload="none" src="s/itpUpy4Q/song.mp3"></audio>
+</article>
+<article class="song" data-q="bus missed, class skipped sandwich1234564 the bus didt show and i couldnt get to karate class. good hook">
+  <a class="t" href="s/rBHqqWdS/">Bus Missed, Class Skipped</a>
+  <div class="by">@sandwich1234564 <span class="day">· Oct 18</span></div>
+  <div class="idea">about: the bus didt show and i couldnt get to karate class. good hook</div>
+  <audio controls preload="none" src="s/rBHqqWdS/song.mp3"></audio>
+</article>
+<article class="song" data-q="i kissed a sensei on the lips sandwich1234564 i kissed a sensei on the lips">
+  <a class="t" href="s/NjZ21hI4/">I Kissed a Sensei on the Lips</a>
+  <div class="by">@sandwich1234564 <span class="day">· Oct 18</span></div>
+  <div class="idea">about: i kissed a sensei on the lips</div>
+  <audio controls preload="none" src="s/NjZ21hI4/song.mp3"></audio>
+</article>
+<article class="song" data-q="santa kicks my a$$ in karate karateradio santa kick my a$$ in karate">
+  <a class="t" href="s/T89e25Gv/">Santa Kicks My A$$ in Karate</a>
+  <div class="by">@karateradio <span class="day">· Oct 18</span></div>
+  <div class="idea">about: santa kick my a$$ in karate</div>
+  <audio controls preload="none" src="s/T89e25Gv/song.mp3"></audio>
+</article>
+<article class="song" data-q="karate kicks my mom&#x27;s windshield karateradio karate kicks my moms windsheild">
+  <a class="t" href="s/lj0Z5Zch/">Karate Kicks My Mom&#x27;s Windshield</a>
+  <div class="by">@karateradio <span class="day">· Oct 18</span></div>
+  <div class="idea">about: karate kicks my moms windsheild</div>
+  <audio controls preload="none" src="s/lj0Z5Zch/song.mp3"></audio>
+</article>
+<article class="song" data-q="wake up time to go to karate sandwich1234564 wake up time to go to karate">
+  <a class="t" href="s/nzesRciD/">Wake Up Time to Go to Karate</a>
+  <div class="by">@sandwich1234564 <span class="day">· Oct 17</span></div>
+  <div class="idea">about: wake up time to go to karate</div>
+  <audio controls preload="none" src="s/nzesRciD/song.mp3"></audio>
+</article>
+<article class="song" data-q="eggs fuel my punches porkroll7 eggs fuel my punches.">
+  <a class="t" href="s/dRS6BGwP/">Eggs Fuel My Punches</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 17</span></div>
+  <div class="idea">about: eggs fuel my punches.</div>
+  <audio controls preload="none" src="s/dRS6BGwP/song.mp3"></audio>
+</article>
+<article class="song" data-q="pizza guy said i’m fat karateradio pizza delivery driver called me fat">
+  <a class="t" href="s/XDaL1Y6y/">Pizza Guy Said I’m Fat</a>
+  <div class="by">@karateradio <span class="day">· Oct 17</span></div>
+  <div class="idea">about: pizza delivery driver called me fat</div>
+  <audio controls preload="none" src="s/XDaL1Y6y/song.mp3"></audio>
+</article>
+<article class="song" data-q="vodka, not pizza, i said porkroll7 not pizza . it’s a vodka drink">
+  <a class="t" href="s/HqHZxcm1/">Vodka, Not Pizza, I Said</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 17</span></div>
+  <div class="idea">about: not pizza . It’s a vodka drink</div>
+  <audio controls preload="none" src="s/HqHZxcm1/song.mp3"></audio>
+</article>
+<article class="song" data-q="broken toy moms_slipper123 misery.">
+  <a class="t" href="s/JweBGTq3/">Broken Toy</a>
+  <div class="by">@moms_slipper123 <span class="day">· Oct 17</span></div>
+  <div class="idea">about: misery.</div>
+  <audio controls preload="none" src="s/JweBGTq3/song.mp3"></audio>
+</article>
+<article class="song" data-q="obee’s my best friend kurri136 dog named obee">
+  <a class="t" href="s/BKLU6c38/">Obee’s My Best Friend</a>
+  <div class="by">@kurri136 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: dog named obee</div>
+  <audio controls preload="none" src="s/BKLU6c38/song.mp3"></audio>
+</article>
+<article class="song" data-q="porkroll on the lake ketterrm visiting alex in south carolina  and went on a boat trip.  he fixes shit - that’s what he does .  he pees in the lake and looks like kevin costner. now we are checking out kyle’s radio station">
+  <a class="t" href="s/E7IvqJDj/">Porkroll on the Lake</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 16</span></div>
+  <div class="idea">about: visiting Alex in South Carolina  and went on a boat trip.  He fixes shit - that’s what he does .  He pees in the lake and looks like Kevin Costner. Now we are checking out Kyle’s radio station</div>
+  <audio controls preload="none" src="s/E7IvqJDj/song.mp3"></audio>
+</article>
+<article class="song" data-q="aunt rita’s boat, kyle’s station ketterrm visiting aunt rita with jamie and alex in south carolina  and went on a boat trip.  now we are checking out kyle’s radio station with dana, maryann and robert while getting ready for dinner">
+  <a class="t" href="s/aRHKNiV1/">Aunt Rita’s Boat, Kyle’s Station</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 16</span></div>
+  <div class="idea">about: visiting aunt Rita with Jamie and Alex in South Carolina  and went on a boat trip.  Now we are checking out Kyle’s radio station with Dana, Maryann and Robert while getting ready for dinner</div>
+  <audio controls preload="none" src="s/aRHKNiV1/song.mp3"></audio>
+</article>
+<article class="song" data-q="my gi turned pink in the wash porkroll7 my gi turned pink in the wash">
+  <a class="t" href="s/UfFtO50l/">My Gi Turned Pink in the Wash</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: my gi turned pink in the wash</div>
+  <audio controls preload="none" src="s/UfFtO50l/song.mp3"></audio>
+</article>
+<article class="song" data-q="my karate kick didn’t kill porkroll7 my karate kick didn’t kill">
+  <a class="t" href="s/jzs42RyO/">My Karate Kick Didn’t Kill</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: my karate kick didn’t kill</div>
+  <audio controls preload="none" src="s/jzs42RyO/song.mp3"></audio>
+</article>
+<article class="song" data-q="my shuriken missed the mark karateradio my shuriken fell short">
+  <a class="t" href="s/mGPOQPc4/">My Shuriken Missed the Mark</a>
+  <div class="by">@karateradio <span class="day">· Oct 16</span></div>
+  <div class="idea">about: my shuriken fell short</div>
+  <audio controls preload="none" src="s/mGPOQPc4/song.mp3"></audio>
+</article>
+<article class="song" data-q="i kissed a ninja porkroll7 i kissed a ninja">
+  <a class="t" href="s/Px4EMgok/">I Kissed a Ninja</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: I kissed a ninja</div>
+  <audio controls preload="none" src="s/Px4EMgok/song.mp3"></audio>
+</article>
+<article class="song" data-q="karate time elliot_gd karate time!">
+  <a class="t" href="s/DdPNOXJB/">Karate Time</a>
+  <div class="by">@elliot_gd <span class="day">· Oct 16</span></div>
+  <div class="idea">about: Karate Time!</div>
+  <audio controls preload="none" src="s/DdPNOXJB/song.mp3"></audio>
+</article>
+<article class="song" data-q="pizza night, karate obese elliot_gd pizza night, karate obese">
+  <a class="t" href="s/tX4LRFqh/">Pizza Night, Karate Obese</a>
+  <div class="by">@elliot_gd <span class="day">· Oct 16</span></div>
+  <div class="idea">about: Pizza Night, Karate Obese</div>
+  <audio controls preload="none" src="s/tX4LRFqh/song.mp3"></audio>
+</article>
+<article class="song" data-q="i miss my salty snacks karateradio i miss my salty snacks">
+  <a class="t" href="s/nqxiKn7K/">I Miss My Salty Snacks</a>
+  <div class="by">@karateradio <span class="day">· Oct 16</span></div>
+  <div class="idea">about: i miss my salty snacks</div>
+  <audio controls preload="none" src="s/nqxiKn7K/song.mp3"></audio>
+</article>
+<article class="song" data-q="my motto&#x27;s a heartbeat exix_9 the motto">
+  <a class="t" href="s/SAsaYmuA/">My Motto&#x27;s a Heartbeat</a>
+  <div class="by">@exix_9 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: the motto</div>
+  <audio controls preload="none" src="s/SAsaYmuA/song.mp3"></audio>
+</article>
+<article class="song" data-q="paparazzi flash yolkunn paparazzi x clarity - dubstep">
+  <a class="t" href="s/3nBHIqxz/">Paparazzi Flash</a>
+  <div class="by">@yolkunn <span class="day">· Oct 16</span></div>
+  <div class="idea">about: Paparazzi x Clarity - Dubstep</div>
+  <audio controls preload="none" src="s/3nBHIqxz/song.mp3"></audio>
+</article>
+<article class="song" data-q="spinning kick, baby gone porkroll7 i lost my baby doing a spinning kick">
+  <a class="t" href="s/YHBOGHUu/">Spinning Kick, Baby Gone</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: I lost my baby doing a spinning kick</div>
+  <audio controls preload="none" src="s/YHBOGHUu/song.mp3"></audio>
+</article>
+<article class="song" data-q="i dream of karate porkroll7 i dream of karate">
+  <a class="t" href="s/UiHTdqVF/">I Dream of Karate</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: I dream of karate</div>
+  <audio controls preload="none" src="s/UiHTdqVF/song.mp3"></audio>
+</article>
+<article class="song" data-q="i lost my black belt porkroll7 i lost my black belt. no flat notes">
+  <a class="t" href="s/e6bGjmtQ/">I Lost My Black Belt</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: I lost my black belt. No flat notes</div>
+  <audio controls preload="none" src="s/e6bGjmtQ/song.mp3"></audio>
+</article>
+<article class="song" data-q="you’re my karate heart attack porkroll7 you’re my karate heart attack">
+  <a class="t" href="s/XHaoynbM/">You’re My Karate Heart Attack</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: you’re my karate heart attack</div>
+  <audio controls preload="none" src="s/XHaoynbM/song.mp3"></audio>
+</article>
+<article class="song" data-q="my wrist says no more reps catsarebestt2 https://youtu.be/eode8d2cglk?si=hw_nzqihnemztnjc">
+  <a class="t" href="s/OSPnSMuT/">My Wrist Says No More Reps</a>
+  <div class="by">@catsarebestt2 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: https://youtu.be/eodE8d2cGLk?si=HW_NzqiHNemZTNjc</div>
+  <audio controls preload="none" src="s/OSPnSMuT/song.mp3"></audio>
+</article>
+<article class="song" data-q="walking away from the drama sparwager2k21 walking away-craig david">
+  <a class="t" href="s/WYVpqpxn/">Walking Away from the Drama</a>
+  <div class="by">@sparwager2k21 <span class="day">· Oct 16</span></div>
+  <div class="idea">about: Walking Away-Craig David</div>
+  <audio controls preload="none" src="s/WYVpqpxn/song.mp3"></audio>
+</article>
+<article class="song" data-q="from noob to pro karateradio from noob to pro the karate adventure of a lifetime">
+  <a class="t" href="s/lnxAPkf2/">From Noob to Pro</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: from noob to pro the karate adventure of a lifetime</div>
+  <audio controls preload="none" src="s/lnxAPkf2/song.mp3"></audio>
+</article>
+<article class="song" data-q="i left karate for good karateradio i left karate for good">
+  <a class="t" href="s/RzOLZ07z/">I Left Karate for Good</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: I left karate for good</div>
+  <audio controls preload="none" src="s/RzOLZ07z/song.mp3"></audio>
+</article>
+<article class="song" data-q="snail on the track testviewer6 a snail training for a marathon">
+  <a class="t" href="s/9xNufzOk/">Snail on the Track</a>
+  <div class="by">@testviewer6 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: a snail training for a marathon</div>
+  <audio controls preload="none" src="s/9xNufzOk/song.mp3"></audio>
+</article>
+<article class="song" data-q="sneeze spell, magic twist testviewer5 a wizard who can only cast spells while sneezing">
+  <a class="t" href="s/9hS0b3wS/">Sneeze Spell, Magic Twist</a>
+  <div class="by">@testviewer5 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: a wizard who can only cast spells while sneezing</div>
+  <audio controls preload="none" src="s/9hS0b3wS/song.mp3"></audio>
+</article>
+<article class="song" data-q="i miss my karate wife karateradio i miss my karate wife">
+  <a class="t" href="s/9R7HcM9X/">I Miss My Karate Wife</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: I miss my Karate Wife</div>
+  <audio controls preload="none" src="s/9R7HcM9X/song.mp3"></audio>
+</article>
+<article class="song" data-q="donuts &amp; karate karateradio sneak into the dining hall to eat donuts using my karate skills">
+  <a class="t" href="s/nmJCQsPU/">Donuts &amp; Karate</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: Sneak into the Dining hall to eat donuts using my karate skills</div>
+  <audio controls preload="none" src="s/nmJCQsPU/song.mp3"></audio>
+</article>
+<article class="song" data-q="i&#x27;m a pirate who fears the deep testviewer4 a pirate who is afraid of water">
+  <a class="t" href="s/hzXa4L0d/">I&#x27;m a Pirate Who Fears the Deep</a>
+  <div class="by">@testviewer4 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: a pirate who is afraid of water</div>
+  <audio controls preload="none" src="s/hzXa4L0d/song.mp3"></audio>
+</article>
+<article class="song" data-q="my cat knocks things off the counter at 3am testviewer3 my cat knocks everything off the counter at 3am">
+  <a class="t" href="s/6lYhMlr9/">My Cat Knocks Things Off the Counter at 3am</a>
+  <div class="by">@testviewer3 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: my cat knocks everything off the counter at 3am</div>
+  <audio controls preload="none" src="s/6lYhMlr9/song.mp3"></audio>
+</article>
+<article class="song" data-q="cold slice testviewer2 my roommate keeps eating my leftover pizza">
+  <a class="t" href="s/MP1NYnQ2/">Cold Slice</a>
+  <div class="by">@testviewer2 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: my roommate keeps eating my leftover pizza</div>
+  <audio controls preload="none" src="s/MP1NYnQ2/song.mp3"></audio>
+</article>
+<article class="song" data-q="he ate my homework testviewer my dog ate my homework and now he is smarter than me">
+  <a class="t" href="s/IeGxLYmU/">He Ate My Homework</a>
+  <div class="by">@testviewer <span class="day">· Oct 15</span></div>
+  <div class="idea">about: my dog ate my homework and now he is smarter than me</div>
+  <audio controls preload="none" src="s/IeGxLYmU/song.mp3"></audio>
+</article>
+<article class="song" data-q="porkroll welcome ketterrm just landed in south carolina">
+  <a class="t" href="s/n2KLla93/">Porkroll Welcome</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 15</span></div>
+  <div class="idea">about: just landed in South Carolina</div>
+  <audio controls preload="none" src="s/n2KLla93/song.mp3"></audio>
+</article>
+<article class="song" data-q="taxi lights and porkroll ketterrm plane landing soon">
+  <a class="t" href="s/uwSWf3RE/">Taxi Lights and Porkroll</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 15</span></div>
+  <div class="idea">about: plane landing soon</div>
+  <audio controls preload="none" src="s/uwSWf3RE/song.mp3"></audio>
+</article>
+<article class="song" data-q="porkroll’s breakfast blessing ketterrm free snacks at work make waking up early for work worth it">
+  <a class="t" href="s/hOzBp57g/">Porkroll’s Breakfast Blessing</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 15</span></div>
+  <div class="idea">about: free snacks at work make waking up early for work worth it</div>
+  <audio controls preload="none" src="s/hOzBp57g/song.mp3"></audio>
+</article>
+<article class="song" data-q="snakes in my gi karateradio snakes in my gi">
+  <a class="t" href="s/pKrOIouc/">Snakes in My Gi</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: Snakes in my Gi</div>
+  <audio controls preload="none" src="s/pKrOIouc/song.mp3"></audio>
+</article>
+<article class="song" data-q="porkroll&#x27;s fortune folly ketterrm top s&amp;p 500 companies 2026">
+  <a class="t" href="s/7DDGPj9K/">Porkroll&#x27;s Fortune Folly</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 15</span></div>
+  <div class="idea">about: top s&amp;p 500 companies 2026</div>
+  <audio controls preload="none" src="s/7DDGPj9K/song.mp3"></audio>
+</article>
+<article class="song" data-q="porkroll in the middle ketterrm plane ride half done fom philly to south carolina with beat drops">
+  <a class="t" href="s/vFVvX6sQ/">Porkroll in the Middle</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 15</span></div>
+  <div class="idea">about: plane ride half done fom Philly to South Carolina with beat drops</div>
+  <audio controls preload="none" src="s/vFVvX6sQ/song.mp3"></audio>
+</article>
+<article class="song" data-q="chipotle time machine ketterrm chipotle family meal in the refrigerator">
+  <a class="t" href="s/NAO6xGCQ/">Chipotle Time Machine</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 15</span></div>
+  <div class="idea">about: chipotle family meal in the refrigerator</div>
+  <audio controls preload="none" src="s/NAO6xGCQ/song.mp3"></audio>
+</article>
+<article class="song" data-q="porkroll’s pension polka ketterrm 401k wisdom roth or traditional">
+  <a class="t" href="s/CVRuewm8/">Porkroll’s Pension Polka</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 15</span></div>
+  <div class="idea">about: 401k wisdom Roth or traditional</div>
+  <audio controls preload="none" src="s/CVRuewm8/song.mp3"></audio>
+</article>
+<article class="song" data-q="recycle bin rhapsody ketterrm bring the recycle bin back up today since the trash day is over">
+  <a class="t" href="s/Hdzsd41P/">Recycle Bin Rhapsody</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 15</span></div>
+  <div class="idea">about: bring the recycle bin back up today since the trash day is over</div>
+  <audio controls preload="none" src="s/Hdzsd41P/song.mp3"></audio>
+</article>
+<article class="song" data-q="wrist of steel ketterrm my wrist hurts from working out">
+  <a class="t" href="s/Gro9F8YD/">Wrist of Steel</a>
+  <div class="by">@ketterrm for @porkroll <span class="day">· Oct 15</span></div>
+  <div class="idea">about: my wrist hurts from working out</div>
+  <audio controls preload="none" src="s/Gro9F8YD/song.mp3"></audio>
+</article>
+<article class="song" data-q="cheesesteak sky ketterrm taking off in the sky of philadelphia">
+  <a class="t" href="s/4TfOr6K1/">Cheesesteak Sky</a>
+  <div class="by">@ketterrm <span class="day">· Oct 15</span></div>
+  <div class="idea">about: taking off in the sky of Philadelphia</div>
+  <audio controls preload="none" src="s/4TfOr6K1/song.mp3"></audio>
+</article>
+<article class="song" data-q="fly, philly, fly ketterrm sitting on the runway waiting for takeoff in philly fly eagles fly">
+  <a class="t" href="s/DWLcl09O/">Fly, Philly, Fly</a>
+  <div class="by">@ketterrm <span class="day">· Oct 15</span></div>
+  <div class="idea">about: sitting on the runway waiting for takeoff in Philly fly eagles fly</div>
+  <audio controls preload="none" src="s/DWLcl09O/song.mp3"></audio>
+</article>
+<article class="song" data-q="cluck cluck sorry karateradio kickin chickens">
+  <a class="t" href="s/7KgXwF3P/">Cluck Cluck Sorry</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: Kickin Chickens</div>
+  <audio controls preload="none" src="s/7KgXwF3P/song.mp3"></audio>
+</article>
+<article class="song" data-q="chicken in the cockpit ketterrm taking off on flight from philly to south carolina">
+  <a class="t" href="s/iiOhqKkA/">Chicken in the Cockpit</a>
+  <div class="by">@ketterrm <span class="day">· Oct 15</span></div>
+  <div class="idea">about: taking off on flight from Philly to South Carolina</div>
+  <audio controls preload="none" src="s/iiOhqKkA/song.mp3"></audio>
+</article>
+<article class="song" data-q="plane math ketterrm sudoku on the plane">
+  <a class="t" href="s/GJh5Picf/">Plane Math</a>
+  <div class="by">@ketterrm <span class="day">· Oct 15</span></div>
+  <div class="idea">about: Sudoku on the plane</div>
+  <audio controls preload="none" src="s/GJh5Picf/song.mp3"></audio>
+</article>
+<article class="song" data-q="karate kick flat tire ketterrm karate kick flat tire">
+  <a class="t" href="s/gg8sNAoW/">Karate Kick Flat Tire</a>
+  <div class="by">@ketterrm <span class="day">· Oct 15</span></div>
+  <div class="idea">about: karate kick flat tire</div>
+  <audio controls preload="none" src="s/gg8sNAoW/song.mp3"></audio>
+</article>
+<article class="song" data-q="white belt to black karateradio journey from white belt to black. the grinding path to glory!">
+  <a class="t" href="s/3aGYjJ1x/">White Belt to Black</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: Journey From white Belt to Black. The grinding Path to glory!</div>
+  <audio controls preload="none" src="s/3aGYjJ1x/song.mp3"></audio>
+</article>
+<article class="song" data-q="paws of darkness karateradio rap about ninja&#x27;s vs kittens.">
+  <a class="t" href="s/APiUzsDD/">Paws of Darkness</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: Rap About Ninja&#x27;s vs Kittens.</div>
+  <audio controls preload="none" src="s/APiUzsDD/song.mp3"></audio>
+</article>
+<article class="song" data-q="karate boots and steel guitar karateradio country karate. a ballad of adventure">
+  <a class="t" href="s/JayVk9w8/">Karate Boots and Steel Guitar</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: Country Karate. A ballad of adventure</div>
+  <audio controls preload="none" src="s/JayVk9w8/song.mp3"></audio>
+</article>
+<article class="song" data-q="butt breeze maxpower1725 edm song with piano feature about stinky buttholes">
+  <a class="t" href="s/yp40tI5A/">Butt Breeze</a>
+  <div class="by">@maxpower1725 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: edm song with piano feature about stinky buttholes</div>
+  <audio controls preload="none" src="s/yp40tI5A/song.mp3"></audio>
+</article>
+<article class="song" data-q="raccoon&#x27;s curse maxpower1725 baseball team struggling to win games">
+  <a class="t" href="s/gf7oXjGq/">Raccoon&#x27;s Curse</a>
+  <div class="by">@maxpower1725 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: baseball team struggling to win games</div>
+  <audio controls preload="none" src="s/gf7oXjGq/song.mp3"></audio>
+</article>
+<article class="song" data-q="five! five! exix_9 five! five!">
+  <a class="t" href="s/ezFhxbC7/">Five! Five!</a>
+  <div class="by">@exix_9 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: FIVE! FIVE!</div>
+  <audio controls preload="none" src="s/ezFhxbC7/song.mp3"></audio>
+</article>
+<article class="song" data-q="the motto exix_9 the motto">
+  <a class="t" href="s/rj2M4FK7/">The Motto</a>
+  <div class="by">@exix_9 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: the motto</div>
+  <audio controls preload="none" src="s/rj2M4FK7/song.mp3"></audio>
+</article>
+<article class="song" data-q="ninja in my living room porkroll7 my baby’s a ninja?">
+  <a class="t" href="s/vTzvEO8R/">Ninja in My Living Room</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: my baby’s a ninja?</div>
+  <audio controls preload="none" src="s/vTzvEO8R/song.mp3"></audio>
+</article>
+<article class="song" data-q="country karate porkroll7 country song about country karate">
+  <a class="t" href="s/Wlexe9gd/">Country Karate</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: country song about country karate</div>
+  <audio controls preload="none" src="s/Wlexe9gd/song.mp3"></audio>
+</article>
+<article class="song" data-q="karate radio knockout porkroll7 karate radio theme song. pumped up up energy">
+  <a class="t" href="s/uFSUrwDy/">Karate Radio Knockout</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: karate radio theme song. Pumped up up energy</div>
+  <audio controls preload="none" src="s/uFSUrwDy/song.mp3"></audio>
+</article>
+<article class="song" data-q="chop out of lockup porkroll7 karate chop out of jail">
+  <a class="t" href="s/Finckb6u/">Chop Out of Lockup</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: karate chop out of jail</div>
+  <audio controls preload="none" src="s/Finckb6u/song.mp3"></audio>
+</article>
+<article class="song" data-q="peel the crime porkroll7 banana boat saving live fighting crime">
+  <a class="t" href="s/QvUjIL0b/">Peel the Crime</a>
+  <div class="by">@porkroll7 <span class="day">· Oct 15</span></div>
+  <div class="idea">about: banana boat saving live fighting crime</div>
+  <audio controls preload="none" src="s/QvUjIL0b/song.mp3"></audio>
+</article>
+<article class="song" data-q="lip lock karate karateradio a triumphant rock anthem about a karate master who finally lands the perfect lip sync">
+  <a class="t" href="s/DzMJ0AEW/">Lip Lock Karate</a>
+  <div class="by">@karateradio <span class="day">· Oct 15</span></div>
+  <div class="idea">about: a triumphant rock anthem about a karate master who finally lands the perfect lip sync</div>
+  <audio controls preload="none" src="s/DzMJ0AEW/song.mp3"></audio>
+</article>
+<article class="song" data-q="byte me, invader karateradio robot vs aliens to win the lives of the human race">
+  <a class="t" href="s/YRMcRKJ6/">Byte Me, Invader</a>
+  <div class="by">@karateradio <span class="day">· Oct 14</span></div>
+  <div class="idea">about: robot vs aliens to win the lives of the human race</div>
+  <audio controls preload="none" src="s/YRMcRKJ6/song.mp3"></audio>
+</article>
+<article class="song" data-q="karate love radio beat karateradio a lovesong about karate and radio. and punching. and kicking bad guys">
+  <a class="t" href="s/Uje9LOzr/">Karate Love Radio Beat</a>
+  <div class="by">@karateradio <span class="day">· Oct 14</span></div>
+  <div class="idea">about: A lovesong about Karate and Radio. And punching. And kicking bad guys</div>
+  <audio controls preload="none" src="s/Uje9LOzr/song.mp3"></audio>
+</article>
+  </div>
+  <footer>every song here was written live for someone in chat · <a href="https://www.twitch.tv/karateradio">get yours</a></footer>
+</main>
+<script>
+  const q = document.getElementById("q"), songs = [...document.querySelectorAll(".song")];
+  q.addEventListener("input", () => {
+    const v = q.value.trim().toLowerCase();
+    for (const s of songs) s.hidden = v && !s.dataset.q.includes(v);
+  });
+  document.addEventListener("play", (e) => {   // one song at a time
+    for (const a of document.querySelectorAll("audio")) if (a !== e.target) a.pause();
+  }, true);
+</script>
+</body>
+</html>
